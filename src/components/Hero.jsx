@@ -5,17 +5,17 @@ import { Link } from 'react-router-dom'
 const slides = [
   {
     url: 'https://picsum.photos/seed/hvac-ac-install/1920/1080',
-    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.88) 0%, rgba(20,62,102,0.6) 100%)',
+    overlay: 'linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%)',
     fallback: 'linear-gradient(135deg, #0c1b33 0%, #1a5c8a 50%, #0f2a4a 100%)',
   },
   {
     url: 'https://picsum.photos/seed/hvac-ductwork/1920/1080',
-    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.85) 0%, rgba(20,62,102,0.55) 100%)',
+    overlay: 'linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%)',
     fallback: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 40%, #143e66 100%)',
   },
   {
     url: 'https://picsum.photos/seed/hvac-repair/1920/1080',
-    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.88) 0%, rgba(20,62,102,0.5) 100%)',
+    overlay: 'linear-gradient(135deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%), linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%)',
     fallback: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 60%, #0c1b33 100%)',
   },
 ]
@@ -223,15 +223,17 @@ export default function Hero() {
           color: var(--white);
           margin-bottom: 20px;
           letter-spacing: -0.03em;
+          text-shadow: 0 2px 30px rgba(0,0,0,0.3);
         }
         .hero p {
           font-size: 18px;
-          color: rgba(255,255,255,0.75);
+          color: rgba(255,255,255,0.85);
           line-height: 1.7;
           margin-bottom: 36px;
           max-width: 540px;
           margin-left: auto;
           margin-right: auto;
+          text-shadow: 0 1px 20px rgba(0,0,0,0.25);
         }
         .hero-actions {
           display: flex;
