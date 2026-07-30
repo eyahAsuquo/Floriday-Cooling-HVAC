@@ -22,7 +22,6 @@ const slides = [
 
 export default function Hero() {
   const [current, setCurrent] = useState(0)
-  const [imagesLoaded, setImagesLoaded] = useState(false)
 
   const next = useCallback(() => {
     setCurrent(prev => (prev + 1) % slides.length)
@@ -33,30 +32,14 @@ export default function Hero() {
     return () => clearInterval(timer)
   }, [next])
 
-  useEffect(() => {
-    let count = 0
-    slides.forEach(s => {
-      const img = new Image()
-      img.onload = img.onerror = () => {
-        count++
-        if (count === slides.length) setImagesLoaded(true)
-      }
-      img.src = s.url
-    })
-  }, [])
-
   return (
     <section className="hero">
-      <div className="hero-bg-fixed" />
-
       {slides.map((s, i) => (
         <motion.div
           key={i}
           className="hero-slide"
           style={{
-            backgroundImage: imagesLoaded
-              ? `${s.overlay}, url(${s.url})`
-              : s.fallback,
+            backgroundImage: `${s.overlay}, url(${s.url})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -65,10 +48,6 @@ export default function Hero() {
           transition={{ duration: 1.2, ease: [0.25, 0.1, 0, 1] }}
         />
       ))}
-
-      {!imagesLoaded && (
-        <div className="hero-bg-fallback" />
-      )}
 
       <div className="hero-overlay" />
 
@@ -170,12 +149,6 @@ export default function Hero() {
           align-items: center;
           overflow: hidden;
           background: #0c1b33;
-        }
-        .hero-bg-fixed {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, #0c1b33, #1a5c8a, #0f2a4a);
-          z-index: 0;
         }
         .hero-slide {
           position: absolute;
