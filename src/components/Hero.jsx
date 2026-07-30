@@ -1,60 +1,28 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 const slides = [
   {
-    gradient: 'linear-gradient(135deg, #0c1b33 0%, #1a5c8a 40%, #0f2a4a 100%)',
-    accent: '#4a9fd6',
-    pattern: `
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="p1" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-            <circle cx="40" cy="40" r="1.5" fill="rgba(255,255,255,0.08)"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#p1)"/>
-        <circle cx="85%" cy="25%" r="250" fill="rgba(74,159,214,0.08)"/>
-        <circle cx="15%" cy="75%" r="200" fill="rgba(74,159,214,0.06)"/>
-      </svg>
-    `,
+    url: 'https://picsum.photos/seed/hvac-ac-install/1920/1080',
+    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.88) 0%, rgba(20,62,102,0.6) 100%)',
+    fallback: 'linear-gradient(135deg, #0c1b33 0%, #1a5c8a 50%, #0f2a4a 100%)',
   },
   {
-    gradient: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 30%, #143e66 70%, #0c1b33 100%)',
-    accent: '#7dbde0',
-    pattern: `
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="p2" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-            <rect x="28" y="28" width="4" height="4" rx="2" fill="rgba(255,255,255,0.06)"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#p2)"/>
-        <circle cx="70%" cy="60%" r="300" fill="rgba(125,189,224,0.07)"/>
-        <circle cx="30%" cy="20%" r="180" fill="rgba(125,189,224,0.05)"/>
-      </svg>
-    `,
+    url: 'https://picsum.photos/seed/hvac-ductwork/1920/1080',
+    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.85) 0%, rgba(20,62,102,0.55) 100%)',
+    fallback: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 40%, #143e66 100%)',
   },
   {
-    gradient: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 50%, #143e66 100%)',
-    accent: '#e07a2f',
-    pattern: `
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="p3" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
-            <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#p3)"/>
-        <circle cx="50%" cy="50%" r="350" fill="rgba(224,122,47,0.06)"/>
-      </svg>
-    `,
+    url: 'https://picsum.photos/seed/hvac-repair/1920/1080',
+    overlay: 'linear-gradient(135deg, rgba(12,27,51,0.88) 0%, rgba(20,62,102,0.5) 100%)',
+    fallback: 'linear-gradient(135deg, #0f2a4a 0%, #1a5c8a 60%, #0c1b33 100%)',
   },
 ]
 
 export default function Hero() {
   const [current, setCurrent] = useState(0)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
 
   const next = useCallback(() => {
     setCurrent(prev => (prev + 1) % slides.length)
@@ -65,29 +33,50 @@ export default function Hero() {
     return () => clearInterval(timer)
   }, [next])
 
+  useEffect(() => {
+    let count = 0
+    slides.forEach(s => {
+      const img = new Image()
+      img.onload = img.onerror = () => {
+        count++
+        if (count === slides.length) setImagesLoaded(true)
+      }
+      img.src = s.url
+    })
+  }, [])
+
   return (
     <section className="hero">
-      <AnimatePresence mode="wait">
+      <div className="hero-bg-fixed" />
+
+      {slides.map((s, i) => (
         <motion.div
-          key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0, 1] }}
-          className="hero-bg-gradient"
-          style={{ background: slides[current].gradient }}
+          key={i}
+          className="hero-slide"
+          style={{
+            backgroundImage: imagesLoaded
+              ? `${s.overlay}, url(${s.url})`
+              : s.fallback,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          initial={false}
+          animate={{ opacity: i === current ? 1 : 0 }}
+          transition={{ duration: 1.2, ease: [0.25, 0.1, 0, 1] }}
         />
-      </AnimatePresence>
+      ))}
 
-      <div className="hero-bg-pattern" aria-hidden="true"
-        dangerouslySetInnerHTML={{ __html: slides[current].pattern }}
-      />
+      {!imagesLoaded && (
+        <div className="hero-bg-fallback" />
+      )}
 
-      <div className="hero-accent-glow" style={{ background: `radial-gradient(ellipse at 70% 30%, ${slides[current].accent}15 0%, transparent 60%)` }} />
+      <div className="hero-overlay" />
 
       <div className="hero-slide-indicators">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)}
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
             className={`hero-dot ${i === current ? 'active' : ''}`}
             aria-label={`Slide ${i + 1}`}
           />
@@ -180,31 +169,33 @@ export default function Hero() {
           display: flex;
           align-items: center;
           overflow: hidden;
+          background: #0c1b33;
         }
-        .hero-bg-gradient {
+        .hero-bg-fixed {
           position: absolute;
           inset: 0;
+          background: linear-gradient(135deg, #0c1b33, #1a5c8a, #0f2a4a);
           z-index: 0;
         }
-        .hero-bg-pattern {
+        .hero-slide {
           position: absolute;
           inset: 0;
           z-index: 1;
-          pointer-events: none;
+          will-change: opacity;
+          background-repeat: no-repeat;
         }
-        .hero-bg-pattern svg {
-          width: 100%;
-          height: 100%;
-        }
-        .hero-accent-glow {
+        .hero-overlay {
           position: absolute;
           inset: 0;
-          z-index: 1;
+          z-index: 2;
           pointer-events: none;
+          background:
+            radial-gradient(ellipse at 30% 50%, rgba(74,159,214,0.1) 0%, transparent 60%),
+            radial-gradient(ellipse at 80% 20%, rgba(224,122,47,0.06) 0%, transparent 50%);
         }
         .hero-content {
           position: relative;
-          z-index: 3;
+          z-index: 4;
           text-align: center;
           max-width: 720px;
           margin: 0 auto;
@@ -273,7 +264,7 @@ export default function Hero() {
           transform: translateX(-50%);
           display: flex;
           gap: 10px;
-          z-index: 3;
+          z-index: 4;
         }
         .hero-dot {
           width: 10px;
@@ -298,7 +289,7 @@ export default function Hero() {
           transform: translateX(-50%);
           color: rgba(255,255,255,0.3);
           animation: bounce 2s infinite;
-          z-index: 3;
+          z-index: 4;
         }
         @keyframes bounce {
           0%, 100% { transform: translateX(-50%) translateY(0); }
